@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using DriveSync.Models;
 
 namespace DriveSync.Data
 {
@@ -8,5 +9,7 @@ namespace DriveSync.Data
             : base(options)
         {
         }
+
+        public DbSet<Vehicle> Vehicles { get; set; }
     }
 }
