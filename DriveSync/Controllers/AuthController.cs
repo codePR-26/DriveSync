@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DriveSync.Data;
 using DriveSync.Models;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
+using DriveSync.DTOs;
 
 namespace DriveSync.Controllers
 {
@@ -14,38 +10,48 @@ namespace DriveSync.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _config;
 
-        public AuthController(ApplicationDbContext context,
-                              IConfiguration config)
+        public AuthController(ApplicationDbContext context)
         {
             _context = context;
-            _config = config;
         }
 
-        // -----------------------------
-        // PUBLIC USER REGISTER
-        // -----------------------------
-        [HttpPost("register-user")]
-        public IActionResult Register(Account account)
+
+        // ============================
+        // REGISTER CUSTOMER
+        // ============================
+        [HttpPost("register-customer")]
+        public IActionResult RegisterCustomer(Account account)
         {
-            account.Role = Role.User;
+            if (_context.Accounts.Any(a =>
+                a.Email == account.Email))
+            {
+                return BadRequest("Email already exists");
+            }
+
+            account.Role = "Customer";
 
             _context.Accounts.Add(account);
             _context.SaveChanges();
 
-            return Ok("User Registered");
+            return Ok("Customer Registered");
         }
 
 
-        // -----------------------------
-        // CREATE ADMIN (ONLY ParentAdmin)
-        // -----------------------------
-        [Authorize(Roles = "ParentAdmin")]
-        [HttpPost("create-admin")]
-        public IActionResult CreateAdmin(Account account)
+
+        // ============================
+        // REGISTER ADMIN
+        // ============================
+        [HttpPost("register-admin")]
+        public IActionResult RegisterAdmin(Account account)
         {
-            account.Role = Role.Admin;
+            if (_context.Accounts.Any(a =>
+                a.Email == account.Email))
+            {
+                return BadRequest("Email already exists");
+            }
+
+            account.Role = "Admin";
 
             _context.Accounts.Add(account);
             _context.SaveChanges();
@@ -54,97 +60,65 @@ namespace DriveSync.Controllers
         }
 
 
-        // -----------------------------
-        // CREATE PARENT ADMIN
-        // MAX LIMIT = 2
-        // -----------------------------
-        [HttpPost("create-parent-admin")]
-        public IActionResult CreateParentAdmin(Account account)
-        {
-            var parentAdminCount =
-                _context.Accounts.Count(a =>
-                a.Role == Role.ParentAdmin);
 
-            if (parentAdminCount >= 2)
+        // ============================
+        // REGISTER OWNER (MAX 2)
+        // ============================
+        [HttpPost("register-owner")]
+        public IActionResult RegisterOwner(Account account)
+        {
+            var ownerCount =
+            _context.Accounts
+            .Count(a => a.Role == "Owner");
+
+            if (ownerCount >= 2)
             {
-                return BadRequest("Parent Admin limit reached");
+                return BadRequest(
+                "Maximum 2 Owners allowed");
             }
 
-            account.Role = Role.ParentAdmin;
+            if (_context.Accounts.Any(a =>
+                a.Email == account.Email))
+            {
+                return BadRequest(
+                "Email already exists");
+            }
+
+            account.Role = "Owner";
 
             _context.Accounts.Add(account);
             _context.SaveChanges();
 
-            return Ok("Parent Admin Created");
+            return Ok("Owner Created");
         }
 
 
-        // -----------------------------
-        // LOGIN
-        // -----------------------------
+
+        // ============================
+        // LOGIN (COMMON)
+        // ============================
         [HttpPost("login")]
-        public IActionResult Login(Account loginUser)
+        public IActionResult Login(LoginDTOs loginUser)
         {
-            var account = _context.Accounts
-                .FirstOrDefault(x =>
-                x.Username == loginUser.Username &&
-                x.Password == loginUser.Password);
+            var account =
+            _context.Accounts.FirstOrDefault(a =>
+            a.Email == loginUser.Email &&
+            a.Password == loginUser.Password);
 
             if (account == null)
-                return Unauthorized("Invalid Credentials");
-
-            var claims = new[]
             {
-                new Claim(ClaimTypes.Name,
-                          account.Username),
+                return Unauthorized(
+                "Invalid Email or Password");
+            }
 
-                new Claim(ClaimTypes.Role,
-                          account.Role.ToString())
-            };
-
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    _config["Jwt:Key"]));
-
-            var creds =
-                new SigningCredentials(key,
-                SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddHours(2),
-                signingCredentials: creds
-            );
-
-            var tokenString =
-                new JwtSecurityTokenHandler()
-                .WriteToken(token);
-
-            Response.Cookies.Append("jwt",
-                tokenString,
-                new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = false,
-                    SameSite = SameSiteMode.Lax,
-                    Expires =
-                    DateTimeOffset.Now.AddHours(2)
-                });
-
-            return Ok("Login Successful");
+            return Ok(new
+            {
+                Message = "Login Successful",
+                account.Name,
+                account.Email,
+                account.Role
+            });
         }
 
-
-        // -----------------------------
-        // LOGOUT
-        // -----------------------------
-        [HttpPost("logout")]
-        public IActionResult Logout()
-        {
-            Response.Cookies.Delete("jwt");
-            return Ok("Logged out successfully");
-        }
     }
 }

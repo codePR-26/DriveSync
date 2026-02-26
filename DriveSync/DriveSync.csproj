@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOS\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Services\" />
   </ItemGroup>
