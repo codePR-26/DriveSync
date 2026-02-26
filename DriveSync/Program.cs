@@ -1,8 +1,11 @@
 using DriveSync.Data;
-using Microsoft.EntityFrameworkCore;
+using DriveSync.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,4 +87,24 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db =
+    scope.ServiceProvider
+    .GetRequiredService<ApplicationDbContext>();
+
+    // Create Parent Admin automatically
+    if (!db.Accounts.Any(a =>
+        a.Role == Role.ParentAdmin))
+    {
+        db.Accounts.Add(new Account
+        {
+            Username = "root",
+            Password = "root123",
+            Role = Role.ParentAdmin
+        });
+
+        db.SaveChanges();
+    }
+}
 app.Run();
