@@ -29,5 +29,8 @@ namespace DriveSync.Models
         // Owner / Admin / Customer
 
         public string? Role { get; set; }
+
+
+        public ICollection<Reservation>? Reservations { get; set; }
     }
 }

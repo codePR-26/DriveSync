@@ -1,14 +1,15 @@
 using DriveSync.Data;
-using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
-
+using DriveSync.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer; // ✅ ADDED JWT
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens; // ✅ token validation
+using Scalar.AspNetCore;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<ReservationService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(
@@ -84,3 +85,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

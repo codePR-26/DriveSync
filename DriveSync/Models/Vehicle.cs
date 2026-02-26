@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DriveSync.Models;
+using System.Collections.Generic;  
+using System.ComponentModel.DataAnnotations;
 
 public class Vehicle
 {
@@ -22,4 +24,8 @@ public class Vehicle
     public string Status { get; set; } = "Available";
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    // Navigation Property
+    // One vehicle → many reservations
+    public ICollection<Reservation>? Reservations { get; set; }
 }
