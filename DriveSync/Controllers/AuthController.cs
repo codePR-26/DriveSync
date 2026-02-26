@@ -2,6 +2,10 @@
 using DriveSync.Data;
 using DriveSync.Models;
 using DriveSync.DTOs;
+using Microsoft.IdentityModel.Tokens; // ✅ ADDED JWT
+using System.IdentityModel.Tokens.Jwt; // ✅ ADDED JWT
+using System.Security.Claims; // ✅ ADDED CLAIMS
+using System.Text; // ✅ ADDED SECRET KEY
 
 namespace DriveSync.Controllers
 {
@@ -94,9 +98,35 @@ namespace DriveSync.Controllers
 
 
 
-        // ============================
-        // LOGIN (COMMON)
-        // ============================
+ // ============================
+ // LOGIN (COMMON)
+ // ============================
+
+        //    POST /api/Auth/login
+        //          ↓
+
+        //   email + password check
+
+        //         ↓
+
+        //   JWT token generated
+
+        //       ↓
+
+        //   Stored in cookie "jwt"
+
+        //       ↓
+
+        //   Postman automatically sends cookie
+
+        //           ↓
+
+        //   VehicleController Authorize works
+
+
+
+
+
         [HttpPost("login")]
         public IActionResult Login(LoginDTOs loginUser)
         {
@@ -111,9 +141,80 @@ namespace DriveSync.Controllers
                 "Invalid Email or Password");
             }
 
+
+            // ✅ ADDED — JWT CLAIMS
+            var claims = new[]
+            {
+        new Claim(ClaimTypes.Name, account.Email),
+
+        // ✅ VERY IMPORTANT FOR ROLE AUTHORIZE
+        new Claim(ClaimTypes.Role, account.Role),
+
+        new Claim("UserId", account.Id.ToString())
+    };
+
+
+            // ✅ ADDED — SECRET KEY FROM appsettings.json
+            var key =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(
+                    HttpContext.RequestServices
+                    .GetRequiredService<IConfiguration>()
+                    ["Jwt:Key"]!));
+
+            var creds =
+                new SigningCredentials(
+                    key,
+                    SecurityAlgorithms.HmacSha256);
+
+
+            // ✅ CREATE TOKEN
+            var token = new JwtSecurityToken(
+
+                issuer:
+                HttpContext.RequestServices
+                .GetRequiredService<IConfiguration>()
+                ["Jwt:Issuer"],
+
+                audience:
+                HttpContext.RequestServices
+                .GetRequiredService<IConfiguration>()
+                ["Jwt:Audience"],
+
+                claims: claims,
+
+                expires:
+                DateTime.Now.AddHours(3),
+
+                signingCredentials: creds
+            );
+
+
+            var jwtToken =
+                new JwtSecurityTokenHandler()
+                .WriteToken(token);
+
+
+            // ✅ ADDED — STORE TOKEN INSIDE COOKIE
+            Response.Cookies.Append(
+                "jwt",
+                jwtToken,
+                new CookieOptions
+                {
+                    HttpOnly = true, // ✅ secure
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+
+                    Expires =
+                    DateTimeOffset.Now.AddHours(3)
+                });
+
+
+            // OLD RESPONSE KEPT SAME STYLE
             return Ok(new
             {
                 Message = "Login Successful",
+
                 account.Name,
                 account.Email,
                 account.Role

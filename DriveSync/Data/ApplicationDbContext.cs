@@ -5,17 +5,18 @@ namespace DriveSync.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        // Vehicle table
-        public DbSet<Vehicle> Vehicles { get; set; }
+       
 
         // Account login table
         public DbSet<Account> Accounts { get; set; }
+
+        // Vehicle table
+        public DbSet<Vehicle> Vehicles { get; set; }
 
 
         // Configure database rules

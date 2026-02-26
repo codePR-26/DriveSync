@@ -1,23 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DriveSync.Models
+public class Vehicle
 {
-    public class Vehicle
-    {
-        [Key]
-        public int Id { get; set; }
+    [Key]
+    public int VehicleId { get; set; }
 
-        [Required]
-        public string Brand { get; set; }
+    [Required]
+    public string Model { get; set; }
 
-        [Required]
-        public string Model { get; set; }
+    [Required]
+    public string Brand { get; set; }
 
-        public int Year { get; set; }
+    public int PassengerCapacity { get; set; }
 
-        [Required]
-        public decimal PricePerDay { get; set; }
+    public int EngineCapacity { get; set; }
 
-        public bool IsAvailable { get; set; } = true;
-    }
+    public decimal DailyRate { get; set; }
+
+    public decimal MonthlyRate { get; set; }
+
+    public string Status { get; set; } = "Available";
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 }

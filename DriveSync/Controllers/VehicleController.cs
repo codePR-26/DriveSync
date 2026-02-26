@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using DriveSync.Data;
 using DriveSync.Models;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace DriveSync.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // Must login
+    [Authorize] // Login required
     public class VehicleController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -17,14 +18,17 @@ namespace DriveSync.Controllers
             _context = context;
         }
 
-        // ------------------------
-        // CREATE VEHICLE
+        // ----------------------------
+        // ADD VEHICLE
         // ADMIN ONLY
-        // ------------------------
+        // ----------------------------
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddVehicle(Vehicle vehicle)
         {
+            vehicle.CreatedAt = DateTime.Now;
+            vehicle.Status ??= "Available";
+
             _context.Vehicles.Add(vehicle);
             _context.SaveChanges();
 
@@ -32,10 +36,10 @@ namespace DriveSync.Controllers
         }
 
 
-        // ------------------------
+        // ----------------------------
         // GET ALL VEHICLES
         // ALL ROLES
-        // ------------------------
+        // ----------------------------
         [Authorize(Roles = "Admin,User,ParentAdmin")]
         [HttpGet]
         public IActionResult GetAllVehicles()
@@ -46,10 +50,10 @@ namespace DriveSync.Controllers
         }
 
 
-        // ------------------------
+        // ----------------------------
         // GET VEHICLE BY ID
         // ALL ROLES
-        // ------------------------
+        // ----------------------------
         [Authorize(Roles = "Admin,User,ParentAdmin")]
         [HttpGet("{id}")]
         public IActionResult GetVehicle(int id)
@@ -57,33 +61,44 @@ namespace DriveSync.Controllers
             var vehicle = _context.Vehicles.Find(id);
 
             if (vehicle == null)
-                return NotFound();
+                return NotFound("Vehicle not found");
 
             return Ok(vehicle);
         }
 
 
-        // ------------------------
+        // ----------------------------
         // UPDATE VEHICLE
         // ADMIN ONLY
-        // ------------------------
+        // ----------------------------
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public IActionResult UpdateVehicle(int id,
-                                           Vehicle updatedVehicle)
+        public IActionResult UpdateVehicle(int id, Vehicle updatedVehicle)
         {
             var vehicle = _context.Vehicles.Find(id);
 
             if (vehicle == null)
-                return NotFound();
+                return NotFound("Vehicle not found");
+
 
             vehicle.Brand = updatedVehicle.Brand;
             vehicle.Model = updatedVehicle.Model;
-            vehicle.Year = updatedVehicle.Year;
-            vehicle.PricePerDay =
-                updatedVehicle.PricePerDay;
-            vehicle.IsAvailable =
-                updatedVehicle.IsAvailable;
+
+            vehicle.PassengerCapacity =
+                updatedVehicle.PassengerCapacity;
+
+            vehicle.EngineCapacity =
+                updatedVehicle.EngineCapacity;
+
+            vehicle.DailyRate =
+                updatedVehicle.DailyRate;
+
+            vehicle.MonthlyRate =
+                updatedVehicle.MonthlyRate;
+
+            vehicle.Status =
+                updatedVehicle.Status;
+
 
             _context.SaveChanges();
 
@@ -91,10 +106,10 @@ namespace DriveSync.Controllers
         }
 
 
-        // ------------------------
+        // ----------------------------
         // DELETE VEHICLE
         // ADMIN ONLY
-        // ------------------------
+        // ----------------------------
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteVehicle(int id)
@@ -102,7 +117,7 @@ namespace DriveSync.Controllers
             var vehicle = _context.Vehicles.Find(id);
 
             if (vehicle == null)
-                return NotFound();
+                return NotFound("Vehicle not found");
 
             _context.Vehicles.Remove(vehicle);
 
