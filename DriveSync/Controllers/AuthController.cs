@@ -5,7 +5,8 @@ using DriveSync.DTOs;
 using Microsoft.IdentityModel.Tokens; // ✅ ADDED JWT
 using System.IdentityModel.Tokens.Jwt; // ✅ ADDED JWT
 using System.Security.Claims; // ✅ ADDED CLAIMS
-using System.Text; // ✅ ADDED SECRET KEY
+using System.Text;
+using DriveSync.DTOS; // ✅ ADDED SECRET KEY
 
 namespace DriveSync.Controllers
 {
@@ -25,17 +26,26 @@ namespace DriveSync.Controllers
         // REGISTER CUSTOMER
         // ============================
         [HttpPost("register-customer")]
-        public IActionResult RegisterCustomer(Account account)
-        {
-            if (_context.Accounts.Any(a =>
-                a.Email == account.Email))
+        public IActionResult RegisterCustomer(RegisterUserRequestDto request)
+        { 
+                if (_context.Accounts.Any(a =>
+                a.Email == request.Email))
             {
                 return BadRequest("Email already exists");
             }
 
-            account.Role = "Customer";
+            var newUser = new Account()
+            {
+                Name = request.Name,
+                Email = request.Email,
+                Password = request.Password,
+            };
 
-            _context.Accounts.Add(account);
+            newUser.Role = "Customer";
+
+           
+
+            _context.Accounts.Add(newUser);
             _context.SaveChanges();
 
             return Ok("Customer Registered");
@@ -47,17 +57,28 @@ namespace DriveSync.Controllers
         // REGISTER ADMIN
         // ============================
         [HttpPost("register-admin")]
-        public IActionResult RegisterAdmin(Account account)
+        public IActionResult RegisterAdmin(RegisterUserRequestDto request)
         {
+
+           
+
             if (_context.Accounts.Any(a =>
-                a.Email == account.Email))
+                a.Email == request.Email))
             {
                 return BadRequest("Email already exists");
             }
 
-            account.Role = "Admin";
+            var newUser = new Account()
+            {
+                Name = request.Name,
+                Email = request.Email,
+                Password = request.Password,
+            };
 
-            _context.Accounts.Add(account);
+            newUser.Role = "Admin";
+
+
+            _context.Accounts.Add(newUser);
             _context.SaveChanges();
 
             return Ok("Admin Created");
@@ -69,7 +90,7 @@ namespace DriveSync.Controllers
         // REGISTER OWNER (MAX 2)
         // ============================
         [HttpPost("register-owner")]
-        public IActionResult RegisterOwner(Account account)
+        public IActionResult RegisterOwner(RegisterUserRequestDto request)
         {
             var ownerCount =
             _context.Accounts
@@ -82,15 +103,23 @@ namespace DriveSync.Controllers
             }
 
             if (_context.Accounts.Any(a =>
-                a.Email == account.Email))
+                a.Email == request.Email))
             {
                 return BadRequest(
                 "Email already exists");
             }
 
-            account.Role = "Owner";
+            var newUser = new Account()
+            {
+                Name = request.Name,
+                Email = request.Email,
+                Password = request.Password,
+            };
 
-            _context.Accounts.Add(account);
+            newUser.Role = "Owner";
+
+
+            _context.Accounts.Add(newUser);
             _context.SaveChanges();
 
             return Ok("Owner Created");

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DriveSync.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260226191130_AddReservationAndPayment")]
-    partial class AddReservationAndPayment
+    [Migration("20260227040432_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

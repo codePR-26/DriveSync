@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using DriveSync.Data;
+﻿using DriveSync.Data;
+using DriveSync.DTOS;
 using DriveSync.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 
 namespace DriveSync.Controllers
 {
@@ -24,15 +26,26 @@ namespace DriveSync.Controllers
         // ----------------------------
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult AddVehicle(Vehicle vehicle)
+        public IActionResult AddVehicle(CreateVehicleRequestDto request)
         {
-            vehicle.CreatedAt = DateTime.Now;
-            vehicle.Status ??= "Available";
 
-            _context.Vehicles.Add(vehicle);
+            var newVehivle = new Vehicle()
+            {
+                Model = request.Model,
+                Brand = request.Brand,
+                PassengerCapacity = request.PassengerCapacity,
+                EngineCapacity = request.EngineCapacity,
+                DailyRate = request.DailyRate,
+                MonthlyRate = request.MonthlyRate,
+            };
+
+            newVehivle.CreatedAt = DateTime.Now;
+            newVehivle.Status ??= "Available";
+
+            _context.Vehicles.Add(newVehivle);
             _context.SaveChanges();
 
-            return Ok(vehicle);
+            return Ok(newVehivle);
         }
 
 
@@ -73,7 +86,7 @@ namespace DriveSync.Controllers
         // ----------------------------
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public IActionResult UpdateVehicle(int id, Vehicle updatedVehicle)
+        public IActionResult UpdateVehicle(int id, UpdateVehicleRequestDto  request)
         {
             var vehicle = _context.Vehicles.Find(id);
 
@@ -81,23 +94,23 @@ namespace DriveSync.Controllers
                 return NotFound("Vehicle not found");
 
 
-            vehicle.Brand = updatedVehicle.Brand;
-            vehicle.Model = updatedVehicle.Model;
+            vehicle.Brand = request.Brand;
+            vehicle.Model = request.Model;
 
             vehicle.PassengerCapacity =
-                updatedVehicle.PassengerCapacity;
+                request.PassengerCapacity;
 
             vehicle.EngineCapacity =
-                updatedVehicle.EngineCapacity;
+                request.EngineCapacity;
 
             vehicle.DailyRate =
-                updatedVehicle.DailyRate;
+                request.DailyRate;
 
             vehicle.MonthlyRate =
-                updatedVehicle.MonthlyRate;
+                request.MonthlyRate;
 
             vehicle.Status =
-                updatedVehicle.Status;
+                request.Status;
 
 
             _context.SaveChanges();
