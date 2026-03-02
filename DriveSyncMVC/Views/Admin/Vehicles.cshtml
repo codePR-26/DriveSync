@@ -1,0 +1,25 @@
+﻿@model List<DriveSyncMVC.Services.VehicleDto>
+
+<h2>🚗 Manage Vehicles</h2>
+
+<a class="btn btn-success mb-3" href="/Admin/AddVehicle">+ Add Vehicle</a>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Daily Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var v in Model)
+        {
+            <tr>
+                <td>@v.Brand</td>
+                <td>@v.Model</td>
+                <td>₹ @v.DailyRate</td>
+            </tr>
+        }
+    </tbody>
+</table>

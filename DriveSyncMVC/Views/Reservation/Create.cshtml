@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Book Vehicle";
+}
+
+<h2>Book Vehicle</h2>
+
+<form method="post">
+    <input type="hidden" name="vehicleId" value="@ViewBag.VehicleId" />
+
+    <div class="mb-3">
+        <label>Start Date</label>
+        <input type="date" name="startDate" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>End Date</label>
+        <input type="date" name="endDate" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-success">Confirm Booking</button>
+</form>

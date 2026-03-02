@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DriveSync</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff7a18, #ffb347);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: start;
+            padding: 40px 0;
+        }
+
+        .glass-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .footer-dark {
+            background: #1f1f1f;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- 🔥 NAVBAR -->
+    <nav class="navbar navbar-dark bg-dark px-4">
+        <a class="navbar-brand fw-bold text-light" href="/">🚗 DriveSync</a>
+
+        <div>
+            @{
+                var role = Context.Session.GetString("role");
+                var name = Context.Session.GetString("name");
+            }
+
+            @if (role == null)
+            {
+                <a class="btn btn-outline-light btn-sm me-2" href="/Auth/Login">Login</a>
+                <a class="btn btn-warning btn-sm" href="/Auth/Register">Register</a>
+            }
+            else
+            {
+                <span class="text-light me-3">Hi, @name</span>
+
+                @if (role == "Admin" || role == "Owner")
+                {
+                    <a class="btn btn-warning btn-sm me-2" href="/Admin">Admin</a>
+                }
+
+                <a class="btn btn-danger btn-sm" href="/Auth/Logout">Logout</a>
+            }
+        </div>
+    </nav>
+
+    <!-- 🔥 GLOBAL CONTENT WRAPPER -->
+    <div class="main-wrapper">
+        <div class="glass-card">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- 🔥 FOOTER -->
+    <footer class="footer-dark text-center text-light py-3 mt-auto">
+        <small>© @DateTime.Now.Year DriveSync · Smart Mobility Platform</small>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

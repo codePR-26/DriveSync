@@ -1,0 +1,41 @@
+﻿<h2>Add Vehicle</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p class="text-danger">@ViewBag.Error</p>
+}
+
+<form method="post">
+
+    <div class="mb-3">
+        <label>Brand</label>
+        <input name="brand" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Model</label>
+        <input name="model" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Passenger Capacity</label>
+        <input name="passengerCapacity" type="number" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Engine Capacity</label>
+        <input name="engineCapacity" type="number" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Daily Rate</label>
+        <input name="dailyRate" type="number" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Monthly Rate</label>
+        <input name="monthlyRate" type="number" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Add Vehicle</button>
+</form>

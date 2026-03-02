@@ -1,0 +1,30 @@
+﻿@model List<DriveSyncMVC.Services.VehicleDto>
+
+<h2 class="mb-4">Available Vehicles</h2>
+
+<div class="row">
+    @foreach (var v in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@v.Brand @v.Model</h5>
+
+                    <p class="card-text">
+                        <strong>Seats:</strong> @v.PassengerCapacity <br />
+                        <strong>Daily Rate:</strong> ₹ @v.DailyRate <br />
+                        <strong>Status:</strong>
+                        <span class="badge bg-success">@v.Status</span>
+                    </p>
+
+                    <a asp-controller="Reservation"
+                       asp-action="Create"
+                       asp-route-vehicleId="@v.VehicleId"
+                       class="btn btn-primary">
+                        Book Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

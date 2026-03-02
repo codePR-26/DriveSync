@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p class="text-danger">@ViewBag.Error</p>
+}
+
+<form method="post">
+
+    <div class="mb-3">
+        <label>Name</label>
+        <input name="name" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input name="email" type="email" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <input name="password" type="password" class="form-control" required />
+    </div>
+
+    <!-- 🔥 ROLE DROPDOWN -->
+    <div class="mb-3">
+        <label>Register As</label>
+        <select name="role" class="form-control">
+            <option value="Customer">Customer</option>
+            <option value="Admin">Admin</option>
+            <option value="Owner">Owner</option>
+        </select>
+    </div>
+
+    <button class="btn btn-primary">Register</button>
+</form>
+
+<a href="/Auth/Login">Already have an account?</a>

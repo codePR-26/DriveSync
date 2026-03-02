@@ -1,0 +1,58 @@
+﻿@if (ViewBag.Error != null)
+{
+    <p class="text-danger">@ViewBag.Error</p>
+}
+
+@model List<DriveSyncMVC.Services.AdminBookingDto>
+
+<h2 class="mb-3">📊 Bookings History</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Customer</th>
+            <th>Vehicle</th>
+            <th>Dates</th>
+            <th>Total Cost</th>
+            <th>Status</th>
+            <th>Payment</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td><strong>@b.CustomerName</strong></td>
+
+                <td>@b.Vehicle</td>
+
+                <td>
+                    @b.StartDate.ToString("dd-MM-yyyy")
+                    -
+                    @b.EndDate.ToString("dd-MM-yyyy")
+                </td>
+
+                <td>₹ @b.TotalCost</td>
+
+                <td>
+                    @if (b.Status == "Confirmed")
+                    {
+                        <span class="badge bg-success">Confirmed</span>
+                    }
+                    else if (b.Status == "Cancelled")
+                    {
+                        <span class="badge bg-danger">Cancelled</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">@b.Status</span>
+                    }
+                </td>
+
+                <td>
+                    <span class="badge bg-info">@b.Payment</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

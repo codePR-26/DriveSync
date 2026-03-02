@@ -1,0 +1,112 @@
+﻿@model List<DriveSyncMVC.Services.MyReservationDto>
+
+<h2 class="mb-3">My Reservations</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Vehicle</th>
+            <th>Dates</th>
+            <th>Total Cost</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr id="row-@r.ReservationId">
+                <td><strong>@r.Brand @r.VehicleModel</strong></td>
+
+                <td>
+                    @r.StartDate.ToShortDateString()
+                    -
+                    @r.EndDate.ToShortDateString()
+                </td>
+
+                <td><strong>₹ @r.TotalCost</strong></td>
+
+                <!-- STATUS BADGE -->
+                <td>
+                    @if (r.Status == "Pending")
+                    {
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    }
+                    else if (r.Status == "Confirmed")
+                    {
+                        <span class="badge bg-success">Confirmed</span>
+                    }
+                    else if (r.Status == "Cancelled")
+                    {
+                        <span class="badge bg-danger">Cancelled</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@r.Status</span>
+                    }
+                </td>
+
+                <!-- PAYMENT -->
+                <td>
+                    @if (r.Status == "Pending")
+                    {
+                        <a asp-controller="Payment"
+                           asp-action="Pay"
+                           asp-route-reservationId="@r.ReservationId"
+                           class="btn btn-success btn-sm">
+                            Pay Now
+                        </a>
+                    }
+                    else if (r.Status == "Confirmed")
+                    {
+                        <span class="badge bg-success">Paid</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+
+                <!-- REAL-TIME CANCEL BUTTON -->
+                <td>
+                    @if (r.Status == "Pending")
+                    {
+                        <button class="btn btn-danger btn-sm cancel-btn"
+                                data-id="@r.ReservationId">
+                            Cancel
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="text-muted">N/A</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".cancel-btn").forEach(btn => {
+            btn.addEventListener("click", async function () {
+
+                const id = this.dataset.id;
+
+                if (!confirm("Cancel this booking?")) return;
+
+                const response = await fetch(`/Reservation/Cancel/${id}`, {
+                    method: "GET"
+                });
+
+                if (response.ok) {
+                    document.getElementById(`row-${id}`).remove();
+                    alert("Booking cancelled successfully!");
+                } else {
+                    alert("Failed to cancel booking");
+                }
+            });
+        });
+    </script>
+}

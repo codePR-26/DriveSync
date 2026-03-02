@@ -1,0 +1,101 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<style>
+    .hero-container {
+        display: flex;
+        min-height: 70vh;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .hero-left {
+        flex: 1;
+        background: linear-gradient(135deg, #ff7a18, #ffb347);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        text-align: center;
+    }
+
+        .hero-left h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+        }
+
+        .hero-left p {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+    .hero-right {
+        flex: 1;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 400px;
+    }
+
+        .auth-card input {
+            margin-bottom: 12px;
+        }
+
+    @@media(max - width: 768px){
+        .hero-container {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="hero-container">
+
+    <!-- 🔥 LEFT SIDE -->
+    <div class="hero-left">
+        <h1>🚗 DriveSync</h1>
+        <p>Smart Car Rental Platform</p>
+
+        <small class="mt-3">
+            Book cars instantly • Secure payments • Real-time availability
+        </small>
+
+        <a href="/Auth/Register" class="btn btn-light mt-4 px-4">
+            About Us
+        </a>
+    </div>
+
+    <!-- 🔐 RIGHT SIDE LOGIN CARD -->
+    <div class="hero-right">
+        <div class="auth-card">
+
+            <h4 class="mb-3 fw-bold">Login</h4>
+
+            <form method="post" action="/Auth/Login">
+                <input type="email" name="email" class="form-control" placeholder="Email" required />
+                <input type="password" name="password" class="form-control" placeholder="Password" required />
+
+                <button class="btn btn-warning w-100 mt-2">
+                    Login
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small>
+                    New here?
+                    <a href="/Auth/Register">Create account</a>
+                </small>
+            </div>
+
+        </div>
+    </div>
+
+</div>
